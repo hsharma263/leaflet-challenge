@@ -1,1 +1,2 @@
 # leaflet-challenge
+In this challenge, USGS Earthquake data is used from their Live Feed, which updates regularly, and information is plotted onto a map. The earthquakes are color-coded by depth, and their marker correlates to the magnitude of the earthquake. 
