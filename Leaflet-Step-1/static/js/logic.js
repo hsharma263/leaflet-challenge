@@ -1,4 +1,8 @@
+
+
 var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+// var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
+// var plates_url = "https://github.com/fraxen/tectonicplates/blob/master/GeoJSON/PB2002_boundaries.json";
 
 d3.json(url).then(function(data){
  
@@ -12,8 +16,8 @@ function createFeatures(earthquakeData) {
         "</h3><hr><p>" + new Date(feature.properties.time) + 
         "</h3><hr><p>" + "Magnitude: " + feature.properties.mag +"</p>" + 
         "</h3><hr><p>" + "Depth: " + feature.geometry.coordinates[2] + " km" +"</p>");
-
     }
+    
     function markerSize(mag){
         return mag * 50000;
     }
@@ -39,6 +43,7 @@ function createFeatures(earthquakeData) {
             return "lightgreen"
         }
     }
+    
     function createMarker(feature, latlng){
         return L.circle(latlng, {
             radius: markerSize(feature.properties.mag),
@@ -52,10 +57,27 @@ function createFeatures(earthquakeData) {
     var earthquakes = L.geoJSON(earthquakeData, {
         onEachFeature: onEachFeature,
         pointToLayer: createMarker
-    });
-
+    })
     createMap(earthquakes);
-};
+}
+
+
+// var plate_outline = new L.LayerGroup();
+// d3.json(plates_url).then(function(plate_data){
+//     plates = L.geoJSON(plate_data, {
+//         style: function(feature){
+//             return {
+//                 color:"orange",
+//                 fillColor: "white",
+//                 fillOpacity: 0
+//             }
+//         },
+//         onEachFeature: function(feature, layer){
+//             layer.bindPopup("Plate Name: "+ feature.properties.PlateName)
+//         }
+//     })
+//     createMap(plates)
+// })
 
 
 function createMap(earthquakes){
@@ -75,23 +97,26 @@ function createMap(earthquakes){
 
   var overlayMaps = {
       Earthquakes: earthquakes
+    //   "Plate Outline": plate_outline 
   };
 
   var myMap = L.map("map", {
       center: [37.09, -95.71],
       zoom: 2,
-      layers: [street, topo, earthquakes]
+      layers: [street, topo, earthquakes
+        // , plate_outline]
+      ]
+      
   });
-  
 
-  function getColor(d) {
-    return d > 90  ? "#ff0000" :
-           d > 70  ? "#ff8c00" :
-           d > 50   ? "#ffa500" :
-           d > 30   ? "#ffff00" :
-           d > 10   ? "#006400" :
+  function getColor(depth) {
+    return depth > 90  ? "#ff0000" :
+           depth > 70  ? "#ff8c00" :
+           depth > 50   ? "#ffa500" :
+           depth > 30   ? "#ffff00" :
+           depth > 10   ? "#006400" :
                       "#90ee90";
-}
+    }
 
   var legend = L.control({position: "bottomright"});
     legend.onAdd = function(myMap) {
